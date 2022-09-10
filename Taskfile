@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+function task:build {
+  if [[ $1 =~ --(prod|production) || $NODE_ENV = production ]]; then
+    echo 'Running build as production...'
+    [[ -f docker-compose.override.yml ]] && \
+      mv docker-compose.override.yml docker-compose.override.yml.bak
+  fi
+
+  docker-compose build frontend
+}
+
+function task:start {
+  docker-compose up -d
+
+  [[ $1 =~ --logs ]] && docker-compose logs -f
+}
+
+function task:status {
+  docker-compose ps
+}
+
+function task:logs {
+  docker-compose logs -f
+}
+
+function task:stop {
+  docker-compose stop
+}
+
+function task:down {
+  docker-compose down
+}
+
+# Default task, help
+function task:help {
+  if [[ $# -lt 1 ]]; then
+    printf "%s <task> [args]\n\nTasks:\n" "${0}"
+
+    compgen -A function | sed -En 's/task:(.*)/\1/p' | cat -
+  else
+    type task:$1 | tail -n +2
+  fi
+}
+
+TIMEFORMAT="Task completed in %3lR"
+time "task:${@:-help}"

@@ -3,7 +3,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile
     ports:
       - ${DOCKER_HOST_FRONTEND_PORT:-3000}:3000
     environment:
